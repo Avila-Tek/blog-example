@@ -7,6 +7,7 @@ import rateLimit from '@fastify/rate-limit';
 import * as Sentry from '@sentry/node';
 import Fastify, { FastifyHttpOptions } from 'fastify';
 import mongoose from 'mongoose';
+import { getLogger } from './logger';
 
 export async function createApp() {
   let connection: typeof mongoose | null = null;
@@ -31,16 +32,7 @@ export async function createApp() {
 
   if (process.env.NODE_ENV === 'production') {
     config = {
-      logger: {
-        level: 'info',
-        transport: {
-          target: '@axiomhq/pino',
-          options: {
-            dataset: process.env.AXIOM_DATASET,
-            token: process.env.AXIOM_TOKEN,
-          },
-        },
-      },
+      loggerInstance: getLogger(),
     };
   }
 
