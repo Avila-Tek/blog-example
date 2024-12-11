@@ -61,10 +61,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error(`Error parsing user: ${safeParseUser.error}`);
         }
         const user = safeParseUser.data;
-        if (user.role === 'reader') {
-          throw new Error(`Your don't have permission for this url`);
-        }
-
         return {
           token: safeParseToken.data.token,
           ...user,
