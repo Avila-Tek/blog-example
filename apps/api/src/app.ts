@@ -8,6 +8,7 @@ import * as Sentry from '@sentry/node';
 import Fastify, { FastifyHttpOptions } from 'fastify';
 import mongoose from 'mongoose';
 import { getLogger } from './logger';
+import { userPublicRouter } from './components/users/user.router';
 
 export async function createApp() {
   let connection: typeof mongoose | null = null;
@@ -47,6 +48,11 @@ export async function createApp() {
   await app.register(cors, {
     origin: JSON.parse(process.env.CORS_ORIGINS ?? '["*"]'),
     credentials: true,
+  });
+
+  // REGISTER ROUTES
+  app.register(userPublicRouter, {
+    prefix: '/api',
   });
 
   await app.ready();
