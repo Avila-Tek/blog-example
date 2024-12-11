@@ -1,6 +1,6 @@
+import { getCodeAndMessageFromErrorString } from '@/utils';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { authService } from './auth.service';
-import { getCodeAndMessageFromErrorString } from '@/utils';
 
 async function signIn(request: FastifyRequest, reply: FastifyReply) {
   const safeResult = await authService.signIn(request.body, {

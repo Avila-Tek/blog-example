@@ -1,13 +1,4 @@
-import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
-import localFont from 'next/font/local';
-import '../css/color-variables.css';
 import './globals.css';
-import '../css/bg-variables.css';
-import '../css/border-variables.css';
-import '../css/text-variables.css';
-import '../css/fg-variables.css';
-
 import { ReactQueryProvider } from '@/context/react-query';
 import {
   type TAnalyticsOption,
@@ -17,7 +8,10 @@ import {
   type TFeateFlagConfig,
   type TFeatureFlagContextProviderProps,
 } from '@repo/ui/feature-flags';
+import type { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
+import dynamic from 'next/dynamic';
+import localFont from 'next/font/local';
 
 const FeatureFlagContextProvider = dynamic<TFeatureFlagContextProviderProps>(
   () =>
@@ -55,15 +49,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const config: TFeateFlagConfig = {
-  //   provider: 'posthog',
-  //   token: process.env.NEXT_PUBLIC_POSTHOG_KEY!,
-  //   api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST!,
-  // };
   const config: TFeateFlagConfig = {
-    provider: 'growthbook',
-    apiHost: process.env.NEXT_PUBLIC_API_HOST,
-    clientKey: process.env.NEXT_PUBLIC_CLIENT_KEY,
+    provider: 'posthog',
+    token: process.env.NEXT_PUBLIC_POSTHOG_KEY!,
+    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST!,
   };
 
   const analyticsOptions: Array<TAnalyticsOption> = [
@@ -81,7 +70,7 @@ export default function RootLayout({
             analyticsAppName="avila-tek-project"
             analyticsOptions={analyticsOptions}
           >
-            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
               {/* <PostHogPageView /> */}
               <ReactQueryProvider>{children}</ReactQueryProvider>
             </ThemeProvider>

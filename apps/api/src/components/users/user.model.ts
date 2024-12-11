@@ -1,6 +1,6 @@
 import { TUser } from '@repo/schemas';
-import { model, Schema } from 'mongoose';
 import { hash } from 'bcrypt';
+import { Schema, model } from 'mongoose';
 
 export interface IUser extends TUser {
   _id?: any;

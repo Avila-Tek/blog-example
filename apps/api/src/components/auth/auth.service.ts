@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
-import { signInInput } from '@repo/schemas';
-import { Safe, safe } from '@repo/utils';
+import { IUser } from '@/components/users/user.model';
 import { userService } from '@/components/users/user.service';
 import { TContext } from '@/types';
-import { IUser } from '@/components/users/user.model';
+import { signInInput } from '@repo/schemas';
+import { Safe, safe } from '@repo/utils';
+import jwt from 'jsonwebtoken';
 
 function getKeys() {
   const privateString = String(process.env.PRIVATE_KEY).replaceAll('\\n', '\n');

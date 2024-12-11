@@ -1,7 +1,7 @@
+import { TContext } from '@/types';
 import { createUserInput, findOneUserInput } from '@repo/schemas';
 import { safe } from '@repo/utils';
 import { User } from './user.model';
-import { TContext } from '@/types';
 
 /**
  *
