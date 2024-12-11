@@ -2,8 +2,9 @@ import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
 import { signInInput } from '@repo/schemas';
 import { Safe, safe } from '@repo/utils';
-import { userService } from '../users/user.service';
+import { userService } from '@/components/users/user.service';
 import { TContext } from '@/types';
+import { IUser } from '@/components/users/user.model';
 
 function getKeys() {
   const privateString = String(process.env.PRIVATE_KEY).replaceAll('\\n', '\n');
@@ -47,7 +48,10 @@ async function signIn(dto: unknown, ctx: TContext): Promise<Safe<string>> {
   const safeParse = safe(() => signInInput.parse(dto));
   if (!safeParse.success) {
     ctx.logger.error(safeParse.error, 'error while parsing signInInput');
-    return safeParse;
+    return {
+      ...safeParse,
+      error: `422-${safeParse}`,
+    };
   }
   const safeUser = await userService.findOneUser(safeParse.data, ctx);
   if (!safeUser.success) {
@@ -63,6 +67,36 @@ async function signIn(dto: unknown, ctx: TContext): Promise<Safe<string>> {
   return safeToken;
 }
 
+async function currentUser(token: string, ctx: TContext): Promise<Safe<IUser>> {
+  const safeVerify = verifyToken(token);
+  if (!safeVerify.success) {
+    return {
+      ...safeVerify,
+      error: `401-${safeVerify.error}`,
+    };
+  }
+  const id =
+    typeof safeVerify.data.payload === 'string'
+      ? JSON.parse(safeVerify.data.payload)
+      : safeVerify.data.payload;
+  const safeUser = await userService.findOneUser({ _id: id.sub }, ctx);
+  if (!safeUser.success) {
+    return safeUser;
+  }
+  if (!safeUser.data) {
+    return {
+      success: false,
+      error: '404-user',
+    };
+  }
+  safeUser.data.password = undefined;
+  return {
+    success: true,
+    data: safeUser.data!,
+  };
+}
+
 export const authService = Object.freeze({
   signIn,
+  currentUser,
 });
