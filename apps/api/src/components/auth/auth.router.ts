@@ -3,10 +3,10 @@ import { authController } from './auth.controller';
 
 export function authPublicRouter(fastify: FastifyInstance) {
   fastify.post('/v1/auth/sign-in', authController.signIn);
-
-  fastify.get('/v1/auth/me', authController.currentUser);
+  fastify.post('/v1/auth/sign-up', authController.signUp);
 }
 
-export function authProtectedRouter(_fastify: FastifyInstance) {
+export function authProtectedRouter(fastify: FastifyInstance) {
   //
+  fastify.get('/v1/auth/me', authController.currentUser);
 }

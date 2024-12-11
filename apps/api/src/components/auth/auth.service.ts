@@ -96,7 +96,32 @@ async function currentUser(token: string, ctx: TContext): Promise<Safe<IUser>> {
   };
 }
 
+async function signUp(
+  dto: unknown,
+  ctx: TContext
+): Promise<Safe<{ user: IUser; token: string }>> {
+  const safeUser = await userService.createOneUser(dto, ctx);
+  if (!safeUser.success) {
+    return safeUser;
+  }
+  const safeToken = signToken({ _id: safeUser.data._id });
+  if (!safeToken.success) {
+    return safeToken;
+  }
+  return {
+    success: true,
+    data: {
+      user: {
+        ...safeUser.data.toJSON(),
+        password: undefined,
+      },
+      token: safeToken.data,
+    },
+  };
+}
+
 export const authService = Object.freeze({
   signIn,
   currentUser,
+  signUp,
 });

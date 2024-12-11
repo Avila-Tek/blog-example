@@ -7,7 +7,8 @@ async function signIn(request: FastifyRequest, reply: FastifyReply) {
     logger: request.log,
   });
   if (!safeResult.success) {
-    return reply.code(500).send(safeResult.error);
+    const { code, error } = getCodeAndMessageFromErrorString(safeResult.error);
+    return reply.code(code).send(error);
   }
   return reply.code(200).send({
     token: safeResult.data,
@@ -29,4 +30,17 @@ async function currentUser(request: FastifyRequest, reply: FastifyReply) {
   return reply.code(200).send(safeResult.data);
 }
 
-export const authController = Object.freeze({ signIn, currentUser });
+async function signUp(request: FastifyRequest, reply: FastifyReply) {
+  const safeResult = await authService.signUp(request.body, {
+    logger: request.log,
+  });
+  if (!safeResult.success) {
+    const { code, error } = getCodeAndMessageFromErrorString(safeResult.error);
+    return reply.code(code).send(error);
+  }
+  return reply.code(200).send({
+    token: safeResult.data,
+  });
+}
+
+export const authController = Object.freeze({ signIn, signUp, currentUser });
