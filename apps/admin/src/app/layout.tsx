@@ -9,6 +9,7 @@ import {
   type TFeatureFlagContextProviderProps,
 } from '@repo/ui/feature-flags';
 import type { Metadata } from 'next';
+import type { SessionProviderProps } from 'next-auth/react';
 import { ThemeProvider } from 'next-themes';
 import dynamic from 'next/dynamic';
 import localFont from 'next/font/local';
@@ -23,11 +24,21 @@ const FeatureFlagContextProvider = dynamic<TFeatureFlagContextProviderProps>(
   }
 );
 
+const PostHogPageView = dynamic(
+  () => import('@repo/ui/feature-flags').then((mod) => mod.PostHogPageView),
+  { ssr: false }
+);
+
 const AnalyticsProvider = dynamic<TAnalyticsProviderProps>(
   () => import('@repo/ui/analytics').then((mod) => mod.AnalyticsProvider),
   {
     ssr: false,
   }
+);
+
+const SessionProvider = dynamic<SessionProviderProps>(
+  () => import('next-auth/react').then((mod) => mod.SessionProvider),
+  { ssr: false }
 );
 
 const geistSans = localFont({
@@ -65,17 +76,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <FeatureFlagContextProvider config={config}>
-          <AnalyticsProvider
-            analyticsAppName="avila-tek-project"
-            analyticsOptions={analyticsOptions}
-          >
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-              {/* <PostHogPageView /> */}
-              <ReactQueryProvider>{children}</ReactQueryProvider>
-            </ThemeProvider>
-          </AnalyticsProvider>
-        </FeatureFlagContextProvider>
+        <SessionProvider>
+          <FeatureFlagContextProvider config={config}>
+            <AnalyticsProvider
+              analyticsAppName="avila-tek-project"
+              analyticsOptions={analyticsOptions}
+            >
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="light"
+                enableSystem
+              >
+                <PostHogPageView />
+                <ReactQueryProvider>{children}</ReactQueryProvider>
+              </ThemeProvider>
+            </AnalyticsProvider>
+          </FeatureFlagContextProvider>
+        </SessionProvider>
       </body>
     </html>
   );

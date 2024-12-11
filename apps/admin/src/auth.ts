@@ -72,4 +72,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.role = user.role;
+        token.email = user.email;
+        token.token = user.token;
+        token.id = user.id;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (token) {
+        session.token = token.token;
+        session.user = {
+          id: token.id as any,
+          emailVerified: null,
+          token: token.token,
+          firstName: token.firstName,
+          lastName: token.lastName,
+          role: token.role,
+          email: token.email!,
+        };
+      }
+      return session;
+    },
+  },
 });
