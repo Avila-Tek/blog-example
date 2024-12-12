@@ -25,7 +25,9 @@ export const getLogger = () => {
   if (process.env.NODE_ENV === 'production') {
     logger = pino(transport);
   } else {
-    logger = pino();
+    logger = pino({
+      level: 'debug',
+    });
   }
 
   return logger;

@@ -1,6 +1,11 @@
 // Import this first!
 import './instrument';
 import { Server } from 'http';
+import {
+  authProtectedRouter,
+  authPublicRouter,
+} from '@/components/auth/auth.router';
+import { userPublicRouter } from '@/components/users/user.router';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
@@ -48,6 +53,18 @@ export async function createApp() {
     origin: JSON.parse(process.env.CORS_ORIGINS ?? '["*"]'),
     credentials: true,
   });
+
+  // REGISTER ROUTES
+  // public routes
+  app.register(userPublicRouter, {
+    prefix: '/api',
+  });
+  app.register(authPublicRouter, {
+    prefix: '/api',
+  });
+
+  // private routes
+  app.register(authProtectedRouter, { prefix: '/api' });
 
   await app.ready();
 
