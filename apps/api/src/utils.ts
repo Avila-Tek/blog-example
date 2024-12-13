@@ -23,11 +23,12 @@ type TPaginationOptions = {
   page: number;
   perPage: number;
   filter?: Record<string, any> | undefined;
+  projection?: string;
 };
 
 export async function pagination<T = unknown>(
   model: Model<T>,
-  { page, perPage, filter = {} }: TPaginationOptions
+  { page, perPage, filter = {}, projection = '' }: TPaginationOptions
 ): Promise<Safe<Pagination<T>>> {
   const safeCount = await safe(model.countDocuments(filter).exec());
 
@@ -48,7 +49,7 @@ export async function pagination<T = unknown>(
 
   const safeItems = await safe(
     model
-      .find(filter, '', {
+      .find(filter, projection, {
         skip,
         limit: perPage,
       })

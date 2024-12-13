@@ -50,7 +50,10 @@ async function paginationUser(dto: unknown, ctx: TContext) {
     ctx.logger.error(safeParse.error, 'error while parsing findOneUserInput');
     return safeParse;
   }
-  const safePagination = await pagination(User, safeParse.data);
+  const safePagination = await pagination(User, {
+    ...safeParse.data,
+    projection: '-password',
+  });
   return safePagination;
 }
 

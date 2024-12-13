@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const userSchema = z.object({
+  _id: z.any().optional().nullable(),
   firstName: z.string(),
   lastName: z.string(),
   email: z.string().email().min(5),
