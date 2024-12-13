@@ -25,7 +25,7 @@ async function currentUser(request: FastifyRequest, reply: FastifyReply) {
   });
   if (!safeResult.success) {
     const { code, error } = getCodeAndMessageFromErrorString(safeResult.error);
-    return reply.code(code).send(error);
+    return reply.code(code).send({ error });
   }
   return reply.code(200).send(safeResult.data);
 }
@@ -36,7 +36,7 @@ async function signUp(request: FastifyRequest, reply: FastifyReply) {
   });
   if (!safeResult.success) {
     const { code, error } = getCodeAndMessageFromErrorString(safeResult.error);
-    return reply.code(code).send(error);
+    return reply.code(code).send({ error });
   }
   return reply.code(200).send({
     token: safeResult.data,

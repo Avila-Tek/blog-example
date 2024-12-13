@@ -5,7 +5,10 @@ import {
   authProtectedRouter,
   authPublicRouter,
 } from '@/components/auth/auth.router';
-import { userPublicRouter } from '@/components/users/user.router';
+import {
+  userProtectedRouter,
+  userPublicRouter,
+} from '@/components/users/user.router';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
@@ -65,6 +68,7 @@ export async function createApp() {
 
   // private routes
   app.register(authProtectedRouter, { prefix: '/api' });
+  app.register(userProtectedRouter, { prefix: '/api' });
 
   await app.ready();
 

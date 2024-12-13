@@ -1,7 +1,12 @@
 import { TContext } from '@/types';
-import { createUserInput, findOneUserInput } from '@repo/schemas';
+import {
+  createUserInput,
+  findOneUserInput,
+  paginationInfo,
+} from '@repo/schemas';
 import { safe } from '@repo/utils';
 import { User } from './user.model';
+import { pagination } from '@/utils';
 
 /**
  *
@@ -39,7 +44,18 @@ async function findOneUser(dto: unknown, ctx: TContext) {
   return safeFind;
 }
 
+async function paginationUser(dto: unknown, ctx: TContext) {
+  const safeParse = safe(() => paginationInfo.parse(dto));
+  if (!safeParse.success) {
+    ctx.logger.error(safeParse.error, 'error while parsing findOneUserInput');
+    return safeParse;
+  }
+  const safePagination = await pagination(User, safeParse.data);
+  return safePagination;
+}
+
 export const userService = Object.freeze({
   createOneUser,
   findOneUser,
+  paginationUser,
 });
