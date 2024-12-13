@@ -2,9 +2,9 @@
 
 import { Pagination, TUser } from '@repo/schemas';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from '../ui/data-table';
-import Link from 'next/link';
 import { Pencil } from 'lucide-react';
+import Link from 'next/link';
+import { DataTable } from '../ui/data-table';
 
 export const columns: ColumnDef<TUser>[] = [
   {

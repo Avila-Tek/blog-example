@@ -1,9 +1,9 @@
-import { userService } from '@repo/services';
 import { UserTable } from '@/components/users/users-table';
+import { paginationInfo } from '@repo/schemas';
+import { userService } from '@repo/services';
+import { safe } from '@repo/utils';
 import { redirect } from 'next/navigation';
 import React from 'react';
-import { safe } from '@repo/utils';
-import { paginationInfo } from '@repo/schemas';
 
 type TUserPageProps = {
   searchParams: Record<string, string>;
