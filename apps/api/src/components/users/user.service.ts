@@ -1,4 +1,5 @@
 import { TContext } from '@/types';
+import { pagination } from '@/utils';
 import {
   createUserInput,
   findOneUserInput,
@@ -6,7 +7,6 @@ import {
 } from '@repo/schemas';
 import { safe } from '@repo/utils';
 import { User } from './user.model';
-import { pagination } from '@/utils';
 
 /**
  *
@@ -15,6 +15,7 @@ import { pagination } from '@/utils';
  * @returns
  */
 async function createOneUser(dto: unknown, ctx: TContext) {
+  console.log(typeof dto);
   const safeParse = safe(() => createUserInput.parse(dto));
   if (!safeParse.success) {
     ctx.logger.error(safeParse.error, 'error while parsing createUserInput');

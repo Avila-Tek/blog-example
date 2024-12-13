@@ -1,9 +1,9 @@
 import {
-  createPaginationSchema,
   Pagination,
   TCreateUserInput,
   TPaginationInfo,
   TUser,
+  createPaginationSchema,
   userSchema,
 } from '@repo/schemas';
 import { Safe, safe, safeFetch } from '@repo/utils';
@@ -11,15 +11,21 @@ import { TRequestConfig } from './types';
 
 async function createUser(
   input: TCreateUserInput,
-  config: TRequestConfig
+  config: Omit<TRequestConfig, 'url'>
 ): Promise<Safe<TUser>> {
-  const response = await safeFetch(new URL(`${config.baseUrl}/${config.url}`), {
-    body: JSON.stringify(input),
+  const response = await safeFetch(new URL(`${config.baseUrl}/api/v1/users`), {
     ...(config ?? {}),
+    body: JSON.stringify(input),
+    method: 'POST',
+    headers: {
+      ...(config?.headers ?? {}),
+      'Content-Type': 'application/json',
+    },
   });
   if (!response.success) {
     return response;
   }
+  console.log(response);
   const parseResponse = safe(() => userSchema.parse(response.data));
   return parseResponse;
 }

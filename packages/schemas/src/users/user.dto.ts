@@ -1,13 +1,11 @@
 import { z } from 'zod';
 import { userSchema } from './user.schema';
 
-export const createUserInput = userSchema.required();
+export const createUserInput = userSchema.omit({ _id: true }).required();
 
 export type TCreateUserInput = z.infer<typeof createUserInput>;
 
-export const updateUserInput = userSchema.partial().extend({
-  _id: z.string(),
-});
+export const updateUserInput = userSchema.partial();
 
 export type TUpdateUserInput = z.infer<typeof updateUserInput>;
 

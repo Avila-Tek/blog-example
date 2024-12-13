@@ -1,6 +1,6 @@
+import { getCodeAndMessageFromErrorString } from '@/utils';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { userService } from './user.service';
-import { getCodeAndMessageFromErrorString } from '@/utils';
 
 async function createOne(request: FastifyRequest, reply: FastifyReply) {
   const safeResult = await userService.createOneUser(request.body, {
