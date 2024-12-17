@@ -27,7 +27,6 @@ async function createUser(
   if (!response.success) {
     return response;
   }
-  console.log(response);
   const parseResponse = safe(() => userSchema.parse(response.data));
   return parseResponse;
 }
@@ -51,7 +50,6 @@ async function paginationUser(
   if (!response.success) {
     return response;
   }
-  console.log(response.data);
   const parseResponse = safe(() =>
     createPaginationSchema(userSchema).parse(response.data)
   );
