@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createUserInput, userSchema } from '@repo/schemas';
+import { createUserInput, TUser } from '@repo/schemas';
 import { userService } from '@repo/services';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -29,16 +29,17 @@ import * as z from 'zod';
 type UserFormValues = z.infer<typeof createUserInput>;
 
 interface UserFormProps {
-  user?: UserFormValues;
-  onSubmit?: (data: UserFormValues) => void;
+  user: TUser;
 }
 
-export function UserForm({ user, onSubmit }: UserFormProps) {
+export function UserForm({ user }: UserFormProps) {
   const [isNewUser, _setIsNewUser] = useState(!user);
   const router = useRouter();
 
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(createUserInput),
+    resolver: zodResolver(
+      !user ? createUserInput : createUserInput.omit({ password: true })
+    ),
     defaultValues: user || {
       firstName: '',
       lastName: '',
@@ -57,13 +58,28 @@ export function UserForm({ user, onSubmit }: UserFormProps) {
       }
       return router.push(`/users/${safeCreate.data._id}`);
     } else {
-      //
+      const safeUpdate = await userService.updateOneUser(
+        {
+          ...data,
+          _id: user?._id,
+        },
+        {
+          baseUrl: process.env.NEXT_PUBLIC_API_URL!,
+        }
+      );
+      if (!safeUpdate.success) {
+        return;
+      }
+      return router.push(`/users/${safeUpdate.data._id}`);
     }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="grid gap-6 grid-cols-1 md:grid-cols-2"
+      >
         <FormField
           control={form.control}
           name="firstName"
@@ -147,7 +163,7 @@ export function UserForm({ user, onSubmit }: UserFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full md:col-span-2">
           {isNewUser ? 'Create User' : 'Update User'}
         </Button>
       </form>

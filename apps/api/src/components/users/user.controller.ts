@@ -24,4 +24,34 @@ async function pagination(request: FastifyRequest, reply: FastifyReply) {
   return reply.code(200).send(safeResult.data);
 }
 
-export const userController = Object.freeze({ createOne, pagination });
+async function findOne(request: FastifyRequest, reply: FastifyReply) {
+  const safeResult = await userService.findOneUser(
+    { _id: (request.params as any)._id },
+    {
+      logger: request.log,
+    }
+  );
+  if (!safeResult.success) {
+    const { code, error } = getCodeAndMessageFromErrorString(safeResult.error);
+    return reply.code(code).send({ error });
+  }
+  return reply.code(200).send(safeResult.data);
+}
+
+async function updateOne(request: FastifyRequest, reply: FastifyReply) {
+  const safeResult = await userService.updateOneUser(request.body, {
+    logger: request.log,
+  });
+  if (!safeResult.success) {
+    const { code, error } = getCodeAndMessageFromErrorString(safeResult.error);
+    return reply.code(code).send({ error });
+  }
+  return reply.code(200).send(safeResult.data);
+}
+
+export const userController = Object.freeze({
+  createOne,
+  pagination,
+  findOne,
+  updateOne,
+});
