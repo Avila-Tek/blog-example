@@ -4,8 +4,10 @@ import {
   createUserInput,
   findOneUserInput,
   paginationInfo,
+  TUser,
+  updateUserInput,
 } from '@repo/schemas';
-import { safe } from '@repo/utils';
+import { Safe, safe } from '@repo/utils';
 import { User } from './user.model';
 
 /**
@@ -15,7 +17,6 @@ import { User } from './user.model';
  * @returns
  */
 async function createOneUser(dto: unknown, ctx: TContext) {
-  console.log(typeof dto);
   const safeParse = safe(() => createUserInput.parse(dto));
   if (!safeParse.success) {
     ctx.logger.error(safeParse.error, 'error while parsing createUserInput');
@@ -58,8 +59,50 @@ async function paginationUser(dto: unknown, ctx: TContext) {
   return safePagination;
 }
 
+async function updateOneUser(
+  dto: unknown,
+  ctx: TContext
+): Promise<Safe<TUser>> {
+  const safeParse = safe(() => updateUserInput.parse(dto));
+  if (!safeParse.success) {
+    ctx.logger.error(safeParse.error, 'error while parsing updateUserInput');
+    return safeParse;
+  }
+  delete safeParse.data.password;
+  const safeUpdate = await safe(
+    User.findOneAndUpdate(
+      {
+        _id: safeParse.data._id,
+      },
+      safeParse.data,
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).exec()
+  );
+  if (!safeUpdate.success) {
+    ctx.logger.error(safeUpdate.error, 'error while updating User');
+    return safeUpdate;
+  }
+  if (!safeUpdate.data) {
+    ctx.logger.error('user not found', 'error while updating User');
+    return {
+      success: false,
+      error: '404-users',
+    };
+  }
+  // remove password
+  safeUpdate.data.password = undefined;
+  return {
+    success: true,
+    data: safeUpdate.data!,
+  };
+}
+
 export const userService = Object.freeze({
   createOneUser,
   findOneUser,
   paginationUser,
+  updateOneUser,
 });
